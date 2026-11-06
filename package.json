@@ -1,0 +1,10 @@
+{
+  "name": "stock-data",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/*.test.cjs",
+    "refresh": "node scripts/update-stock-data.cjs"
+  },
+  "engines": {"node": ">=22"}
+}
