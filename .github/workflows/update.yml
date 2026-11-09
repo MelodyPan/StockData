@@ -3,8 +3,9 @@ name: Update official closing prices
 on:
   workflow_dispatch:
   schedule:
-    # UTC 08:45 = Asia/Taipei 16:45, Monday to Friday.
-    - cron: '45 8 * * 1-5'
+    # Taiwan time, Monday to Friday at 16:45.
+    - cron: '45 16 * * 1-5'
+      timezone: 'Asia/Taipei'
 
 permissions:
   contents: write

@@ -4,7 +4,7 @@
 
 固定網址：`https://raw.githubusercontent.com/MelodyPan/StockData/main/closing-prices.json`
 
-GitHub Actions 每週一至週五台灣時間 16:45 執行一次；可在 Actions 手動執行 Update official closing prices。排程與快取可能延後，請以 JSON 內的交易日期為準。
+GitHub Actions 明確以 `Asia/Taipei` 時區、`45 16 * * 1-5` 排程，每週一至週五 16:45 執行一次；可在 Actions 手動執行 Update official closing prices。排程與快取可能延後，請以 JSON 內的交易日期為準。
 
 Node.js 22，不需要安裝依賴：
 
