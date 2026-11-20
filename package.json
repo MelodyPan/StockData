@@ -5,6 +5,8 @@
   "scripts": {
     "test": "node --test tests/*.test.cjs",
     "refresh": "node scripts/update-stock-data.cjs",
+    "refresh:market": "node scripts/update-market-indices.cjs",
+    "backfill:market": "node scripts/update-market-indices.cjs --backfill",
     "refresh:history": "node scripts/update-stock-history.cjs history",
     "backfill:history": "node scripts/update-stock-history.cjs history --backfill"
   },
