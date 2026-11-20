@@ -28,6 +28,10 @@ jobs:
         run: npm test
       - name: Fetch and validate official prices
         run: npm run refresh
+      - name: Update market indices
+        id: market
+        continue-on-error: true
+        run: npm run refresh:market
       - name: Update historical OHLC and volume
         # A history outage must not stop the existing closing-price publication.
         continue-on-error: true
@@ -38,7 +42,13 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -- closing-prices.json
+          if [ -f market-indices.json ]; then git add -- market-indices.json; fi
           if [ -d history ]; then git add -- history/; fi
           if git diff --cached --quiet; then exit 0; fi
           git commit -m 'data: update official closing prices'
           git push origin HEAD:main
+      - name: Report market update failure after publishing available data
+        if: always() && steps.market.outcome == 'failure'
+        run: |
+          echo '::error::Market index update failed; available stock data was preserved/published.'
+          exit 1
