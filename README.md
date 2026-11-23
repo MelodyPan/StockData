@@ -26,3 +26,5 @@ npm run refresh
 `npm run refresh:history` 每次查最近三個平日並補齊最多 12 個日期，`npm run backfill:history` 可一次回補近六個月。`history/index.json` 記錄各市場日期的成功／休市狀態，可中斷後接續。失敗日期仍保留原資料，後續補齊；歷史更新失敗不會停止原有收盤價發布。所有資料依官方公開全市場報表建立，不讀取或上傳個人 Drive 清單。
 
 維護來源在 MyExplorer。首次發布或更新抓價程式時，使用 MyExplorer 的 `npm run build:stock-data` 匯出檔案，再合併至本專案；保留遠端歷史與最近 JSON，不要強制推送。日常更新僅改 JSON，不建置或發布 StockExplorer。
+
+除權息預告：`npm run refresh:dividends` 讀取證交所 TWT48U_ALL 與櫃買中心 tpex_exright_prepost，產生 `ex-dividends.json`，並整合既有平日排程與手動執行。現金股利為元／股，配股率為原始比例，前端顯示百分比；未公告數字為 null，與 0 分開。每次成功回應完整替換該市場預告，避免保留官方已撤除事件。單市場失敗保留上次成功資料及原更新時間；初次失敗市場以明確錯誤及空表表示未知，兩市場皆失敗不覆寫 JSON。前端僅顯示台北當日或以後最近一筆公告，無公告不顯示卡片；失敗不當作無公告。實際配發以公司公告為準。
