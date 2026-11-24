@@ -8,7 +8,7 @@
 
 `npm run refresh:market` 首次回補最近 12 個月份，日常重抓當月及前月並保留最近 12 個月份；`npm run backfill:market` 可重抓全部 12 個月份。休市不補造資料，日期落後今日時明示尚無今日資料，不把抓取時間當交易日期。落後同次個股已知交易日、兩份報表不一致或來源異常均視為失敗；單市場保留舊資料，兩市失敗不覆寫檔案。大盤更新失敗仍會先提交可用個股資料，然後明確讓 workflow 顯示失敗，保留手動重試入口。
 
-GitHub Actions 使用 UTC 排程 `45 8 * * 1-5`，換算為台灣時間每週一至週五 16:45 執行一次；不依賴 `timezone` 覆寫。可在 Actions 手動執行 Update official closing prices。排程與快取可能延後，請以 JSON 內的交易日期為準。
+GitHub Actions 使用 UTC 排程 `0 8 * * 1-5`，換算為台灣時間每週一至週五 16:00 執行一次；不依賴 `timezone` 覆寫。可在 Actions 手動執行 Update official closing prices。排程與快取可能延後，請以 JSON 內的交易日期為準。
 
 Node.js 22，不需要安裝依賴：
 
