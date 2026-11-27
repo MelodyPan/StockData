@@ -3,9 +3,9 @@ name: Update official closing prices
 on:
   workflow_dispatch:
   schedule:
-    # GitHub cron uses UTC: 08:00 UTC = 16:00 Asia/Taipei, Monday to Friday.
-    # Keep the conversion explicit; observed runs ignored the timezone override.
-    - cron: '0 8 * * 1-5'
+    # Use an explicit Taiwan timezone; reject late overnight scheduled runs below.
+    - cron: '0 16 * * 1-5'
+      timezone: 'Asia/Taipei'
 
 permissions:
   contents: write
@@ -15,8 +15,32 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  refresh:
+  schedule_window:
     if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 2
+    outputs:
+      allowed: ${{ steps.window.outputs.allowed }}
+    steps:
+      - name: Check actual Taiwan execution time
+        id: window
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const now = new Date();
+          const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone:'Asia/Taipei',weekday:'short',hour:'2-digit',hourCycle:'h23'}).formatToParts(now).map(p=>[p.type,p.value]));
+          const allowed = process.env.EVENT_NAME !== 'schedule' || (['Mon','Tue','Wed','Thu','Fri'].includes(parts.weekday) && parts.hour === '16');
+          const message = 'Taipei execution time: ' + new Intl.DateTimeFormat('sv-SE', {timeZone:'Asia/Taipei',dateStyle:'short',timeStyle:'medium'}).format(now);
+          console.log(message);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT, 'allowed=' + allowed + '\n');
+          fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, message + '\n\n' + (allowed ? 'Refresh allowed.' : 'Scheduled refresh skipped: outside Taipei weekday 16:00-16:59. No data will be changed. Use workflow_dispatch for a manual retry.') + '\n');
+          if (!allowed) console.log('::warning::Late scheduled run skipped; data refresh is limited to Taipei weekday 16:00-16:59.');
+          NODE
+  refresh:
+    needs: schedule_window
+    if: github.ref == 'refs/heads/main' && needs.schedule_window.outputs.allowed == 'true'
     runs-on: ubuntu-22.04
     timeout-minutes: 25
     steps:
